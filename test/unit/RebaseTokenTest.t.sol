@@ -247,7 +247,7 @@ contract RebaseTokenTest is Test {
 
         // ACT
         vm.prank(address(vault));
-        rebaseToken.mint(USER, amount);
+        rebaseToken.mint(USER, amount, rebaseToken.getInterestRate());
 
         // ASSERT
         assertEq(rebaseToken.balanceOf(USER), amount);
@@ -284,7 +284,7 @@ contract RebaseTokenTest is Test {
         vault.deposit{value: amount}();
         vm.warp(block.timestamp + 1 days);
         vm.prank(address(vault));
-        rebaseToken.mint(USER, 0); // Triggers _mintAccruedInterest
+        rebaseToken.mint(USER, 0, rebaseToken.getInterestRate()); // Triggers _mintAccruedInterest
         uint256 tokenBalanceAfter = rebaseToken.balanceOf(USER);
 
         // ASSERT
@@ -311,7 +311,7 @@ contract RebaseTokenTest is Test {
         // ACT / ASSERT
         vm.prank(USER);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
-        rebaseToken.mint(USER, mintAmount);
+        rebaseToken.mint(USER, mintAmount, rebaseToken.getInterestRate());
 
         vm.prank(USER);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
