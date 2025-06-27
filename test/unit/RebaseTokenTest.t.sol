@@ -26,6 +26,7 @@ contract RebaseTokenTest is Test {
         // Impersonate the 'owner' address for deployments and role granting
         vm.startPrank(OWNER);
 
+        vm.deal(OWNER, INITIAL_ETH_ALLOWANCE);
         rebaseToken = new RebaseToken();
 
         // Deploy Vault: requires IRebaseToken.
@@ -244,10 +245,11 @@ contract RebaseTokenTest is Test {
         // ARRANGE
         uint256 minimumBound = 1e5;
         amount = bound(amount, minimumBound, type(uint96).max);
+        uint256 interestRate = rebaseToken.getInterestRate();
 
         // ACT
         vm.prank(address(vault));
-        rebaseToken.mint(USER, amount, rebaseToken.getInterestRate());
+        rebaseToken.mint(USER, amount, interestRate);
 
         // ASSERT
         assertEq(rebaseToken.balanceOf(USER), amount);
@@ -277,6 +279,7 @@ contract RebaseTokenTest is Test {
         // ARRANGE
         uint256 minimumBound = 1e5;
         amount = bound(amount, minimumBound, type(uint96).max);
+        uint256 interestRate = rebaseToken.getInterestRate();
 
         // ACT
         vm.deal(USER, amount);
@@ -284,7 +287,7 @@ contract RebaseTokenTest is Test {
         vault.deposit{value: amount}();
         vm.warp(block.timestamp + 1 days);
         vm.prank(address(vault));
-        rebaseToken.mint(USER, 0, rebaseToken.getInterestRate()); // Triggers _mintAccruedInterest
+        rebaseToken.mint(USER, 0, interestRate); // Triggers _mintAccruedInterest
         uint256 tokenBalanceAfter = rebaseToken.balanceOf(USER);
 
         // ASSERT
@@ -305,13 +308,14 @@ contract RebaseTokenTest is Test {
 
     function testCannotCallMintandBurn() public {
         // ARRANGE
-        uint256 mintAmount = 100;
-        uint256 burnAmount = 70;
+        uint256 mintAmount = 1e16;
+        uint256 burnAmount = 1e14;
+        uint256 interestRate = rebaseToken.getInterestRate();
 
         // ACT / ASSERT
         vm.prank(USER);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
-        rebaseToken.mint(USER, mintAmount, rebaseToken.getInterestRate());
+        rebaseToken.mint(USER, mintAmount, interestRate);
 
         vm.prank(USER);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));

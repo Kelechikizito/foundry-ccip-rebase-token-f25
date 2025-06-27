@@ -41,7 +41,7 @@ contract RebaseTokenPool is TokenPool {
     function releaseOrMint(Pool.ReleaseOrMintInV1 calldata releaseOrMintIn)
         external
         override
-        returns (Pool.ReleaseOrMintOutV1 memory /* releaseOrMintOut */ )
+        returns (Pool.ReleaseOrMintOutV1 memory)
     {
         // Named return optional
         _validateReleaseOrMint(releaseOrMintIn);
@@ -61,4 +61,18 @@ contract RebaseTokenPool is TokenPool {
 
         return Pool.ReleaseOrMintOutV1({destinationAmount: releaseOrMintIn.amount});
     }
+
+    // function releaseOrMint(Pool.ReleaseOrMintInV1 calldata releaseOrMintIn)
+    //     external
+    //     returns (Pool.ReleaseOrMintOutV1 memory)
+    // {
+    //     _validateReleaseOrMint(releaseOrMintIn);
+    //     address receiver = releaseOrMintIn.receiver;
+    //     (uint256 userInterestRate) = abi.decode(releaseOrMintIn.sourcePoolData, (uint256));
+    //     // Mint rebasing tokens to the receiver on the destination chain
+    //     // This will also mint any interest that has accrued since the last time the user's balance was updated.
+    //     IRebaseToken(address(i_token)).mint(receiver, releaseOrMintIn.amount, userInterestRate);
+
+    //     return Pool.ReleaseOrMintOutV1({destinationAmount: releaseOrMintIn.amount});
+    // }
 }
