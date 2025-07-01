@@ -19,10 +19,10 @@ contract TokenAndPoolDeployer is Script {
         vm.startBroadcast();
         token = new RebaseToken();
         tokenPool = new RebaseTokenPool(
-            IERC20(address(token)),            // The deployed token address
-            new address[](0),                  // Empty allowlist
-            networkDetails.rmnProxyAddress,    // RMN Proxy address from simulator
-            networkDetails.routerAddress   
+            IERC20(address(token)), // The deployed token address
+            new address[](0), // Empty allowlist
+            networkDetails.rmnProxyAddress, // RMN Proxy address from simulator
+            networkDetails.routerAddress
         );
         token.grantMintAndBurnRole(address(tokenPool));
         RegistryModuleOwnerCustom(networkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(token));
